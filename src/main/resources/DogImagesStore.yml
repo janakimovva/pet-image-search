@@ -1,0 +1,125 @@
+swagger: "2.0"
+info:
+  description: "Pet Images Search API"
+  version: "1.0.0"
+  title: "Dog Images Store"
+host: "localhost"
+basePath: "/dogs/v1"
+schemes:
+- "https"
+- "http"
+paths:
+  /images:
+    get:
+      tags:
+      - "Get All Dog images"
+      summary: "Get Dog Images"
+      description: "Get All Images Grouping by Breed or Get by breed."
+      operationId: "ImagesByBreed"
+      produces:
+      - "application/json"
+      parameters:
+      - in: query
+        name: debug
+        type: string
+        required: false
+        enum:
+          - Labrador
+          - Yorkie
+          - Retriever
+          - Pug
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/dogImageListRef"
+        "400":
+          description: "Bad Request"
+        "404":
+          description: "Not Found"
+  /images/{imageId}:
+    get:
+      tags:
+      - "Get Dog Image Detail"
+      summary: "Get Image Details by ID"
+      description: "Returns Image Details"
+      operationId: "getImageById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "imageId"
+        in: "path"
+        description: "ID of Image"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/dogImageObject"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Image not found"
+  /images/{imageId}/vote/{favorite}:
+    put:
+      tags:
+      - "Vote an Image"
+      summary: "Vote an Image"
+      description: ""
+      operationId: "uploadFile"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "imageId"
+        in: "path"
+        description: "ID of Dog Image to update"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "favorite"
+        in: "path"
+        description: "Like: 1, Dislike: 0"
+        required: true
+        type: "integer"
+        format: "int64"
+        enum:
+          - 0
+          - 1
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Image not found"
+
+definitions:
+  dogImageObject:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: ID of an Image.
+      breed:
+        type: string
+        description: Specified breed of dog image.
+      imageLink:
+        type: string
+        description: Link to get image.
+      votes:
+        type: integer
+        description: Number of total votes.
+  dogImageListRef:
+    type: object
+    properties:
+      dogImages:
+        type:  array
+        items:
+          properties:
+            breed:
+              type: string
+            images:
+              type: array
+              $ref: '#/definitions/dogImageObject'
